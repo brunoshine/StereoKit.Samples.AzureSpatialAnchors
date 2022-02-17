@@ -29,12 +29,12 @@ To run this sample it's required to have an Azure account and create Spatial Anc
 
 # Sample Details
 
-This demo was tested on a Hololens 2. Azure Spatial Anchors to discover anchors need to be set it a type of location strategy. Currently ASA supports:
+This demo was tested on a Hololens 2. Azure Spatial Anchors to discover anchors needs some sort of anchors location criteria. Currently ASA supports:
 - providing a list of know anchors identifiers;
-- looking for anchors near the device using devices sensor
+- looking for anchors near the device using device sensors
 - looking for anchors near other anchors
 
-The challenge with Hololens is that if we try to use the sensors to detect near anchors, well, it never works.
+The challenge with Hololens is that if we try to use the device sensors to detect near anchors, well, it (usually) never works.
 
 So what one can do is persist the ASA unique identifiers to a database and, for instance, use a QR Code for each space/room and correlate the QR Code with the ASA Ids.
 
