@@ -64,6 +64,11 @@ namespace StereoKit.Samples.AzureSpatialAnchors
         CloudSpatialAnchor _locatedAnchor;
 
         /// <summary>
+        /// What parameters will be used to locate the anchors.
+        /// </summary>
+        AnchorLocateCriteria _anchorLocateCriteria;
+
+        /// <summary>
         /// Called the first time to initialize our scene.
         /// </summary>
         internal void Initialize()
@@ -137,7 +142,7 @@ namespace StereoKit.Samples.AzureSpatialAnchors
         /// </summary>
         private void OnCloudSessionError(object sender, SessionErrorEventArgs args)
         {
-            Log.Err("Ops, we had an error on the Cloud Session:");
+            Log.Err("Ops, we had an error on the Cloud Session:" + args.ErrorMessage);
         }
 
         #endregion
@@ -192,10 +197,12 @@ namespace StereoKit.Samples.AzureSpatialAnchors
             /*
              * To use ASA you need an Azure Spatial Anchor account. To create one and get the details for the AccountId, AccountKey and AccountDomain below, please follow this guide:
              * https://docs.microsoft.com/en-us/azure/spatial-anchors/how-tos/create-asa-account?tabs=azure-portal 
+             * 
+             * The Configuration class is not included to protect the ASA keys :)
              */
-            _cloudSession.Configuration.AccountId = "GET_THIS_FROM_AZURE_SPATIAL_ANCHORS_PORTAL";
-            _cloudSession.Configuration.AccountKey = "GET_THIS_FROM_AZURE_SPATIAL_ANCHORS_PORTAL";
-            _cloudSession.Configuration.AccountDomain = "GET_THIS_FROM_AZURE_SPATIAL_ANCHORS_PORTAL";
+            _cloudSession.Configuration.AccountId = Configuration.ASA_AccountId;
+            _cloudSession.Configuration.AccountKey = Configuration.ASA_AccountKey;
+            _cloudSession.Configuration.AccountDomain = Configuration.ASA_AccountDomain;
             /*
              * Lets just handle the basic cloud session events
              */
@@ -203,15 +210,33 @@ namespace StereoKit.Samples.AzureSpatialAnchors
             _cloudSession.AnchorLocated += OnAnchorLocated;
             _cloudSession.LocateAnchorsCompleted += OnLocateAnchorsCompleted;
             _cloudSession.SessionUpdated += OnCloudSessionUpdated;
+
+            /*
+             * Lets improve anchors detection by enabling sensors. 
+             */
+            var sensorProvider = new PlatformLocationProvider();
+            sensorProvider.Sensors.GeoLocationEnabled = true;
+            sensorProvider.Sensors.WifiEnabled = true;
+            _cloudSession.LocationProvider = sensorProvider;
+
+
             /*
              * Lets start our session
              */
             _cloudSession.Start();
 
+
+            _anchorLocateCriteria = new AnchorLocateCriteria();
+            _anchorLocateCriteria.Strategy = LocateStrategy.AnyStrategy;
+
             /*
              * Do we have persisted anchors, if yes, load them
              */
-            LoadCloudAnchorsFromStorage();
+            //LoadCloudAnchorsFromStorage();
+            LoadNearbyCloudAnchors();
+
+
+            _cloudSession.CreateWatcher(_anchorLocateCriteria);
         }
 
         internal void Shutdown()
@@ -231,10 +256,25 @@ namespace StereoKit.Samples.AzureSpatialAnchors
         #endregion
 
         #region ASA helpers
+
+
+
         /// <summary>
         /// We need a way to locate anchors and to load them to our cloud session. 
-        /// There are several strategies to locate anchors, but for Hololens the best way is to store the identifiers on a shared database and then user, for instance, a QR Code to get those identifiers from the database.
-        /// Other devices that have, for instance, GPS can leverage the <see cref="NearDeviceCriteria"/> to get the anchors without the need of a shared database.
+        /// This is an example of loading anchors near the device.
+        /// For other location strategies please take a look at <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.spatialanchors.anchorlocatecriteria?view=spatialanchors-dotnet"/>.
+        /// </summary>
+        private void LoadNearbyCloudAnchors()
+        {
+            NearDeviceCriteria nearDeviceCriteria = new NearDeviceCriteria();
+            nearDeviceCriteria.DistanceInMeters = 50;
+            nearDeviceCriteria.MaxResultCount = 10;
+            _anchorLocateCriteria.NearDevice = nearDeviceCriteria;
+        }
+
+        /// <summary>
+        /// We need a way to locate anchors and to load them to our cloud session. 
+        /// This is an example of loading anchors from a storage, in this case a local file.
         /// For other location strategies please take a look at <see cref="https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.spatialanchors.anchorlocatecriteria?view=spatialanchors-dotnet"/>.
         /// </summary>
         private void LoadCloudAnchorsFromStorage()
@@ -253,9 +293,7 @@ namespace StereoKit.Samples.AzureSpatialAnchors
                         /*
                          * If we got content from the file, than we have an anchor id we can try to locate on the physical space
                          */
-                        AnchorLocateCriteria criteria = new AnchorLocateCriteria();
-                        criteria.Identifiers = new string[] { fileContent };
-                        _cloudSession.CreateWatcher(criteria);
+                        _anchorLocateCriteria.Identifiers = new string[] { fileContent };
                     }
                     else
                     {
@@ -304,24 +342,22 @@ namespace StereoKit.Samples.AzureSpatialAnchors
                 _sessionState = ASASessionState.IDLE;
                 SetFeedback($"Cloud Anchor saved with success. ID: {cloudAnchor.Identifier}");
 
-                Platform.FilePicker(PickerMode.Save, file =>
-                {
-                    if (Platform.WriteFile(file, cloudAnchor.Identifier))
-                    {
-                        _locatedAnchor = cloudAnchor;
-                        _sessionState = ASASessionState.IDLE;
-                        SetFeedback($"Cloud Anchor saved with success. ID: {cloudAnchor.Identifier}");
-                    }
-                    else
-                    {
-                        _locatedAnchor = null;
-                        _sessionState = ASASessionState.IDLE;
-                        SetFeedback("Ops. Could not save cloud anchor to local storage...");
-                    }
-                }, null, ".txt");
-
-
-
+                // Example if you want to store the anchors IDs on a local file
+                //Platform.FilePicker(PickerMode.Save, file =>
+                //{
+                //    if (Platform.WriteFile(file, cloudAnchor.Identifier))
+                //    {
+                //        _locatedAnchor = cloudAnchor;
+                //        _sessionState = ASASessionState.IDLE;
+                //        SetFeedback($"Cloud Anchor saved with success. ID: {cloudAnchor.Identifier}");
+                //    }
+                //    else
+                //    {
+                //        _locatedAnchor = null;
+                //        _sessionState = ASASessionState.IDLE;
+                //        SetFeedback("Ops. Could not save cloud anchor to local storage...");
+                //    }
+                //}, null, ".txt");
 
             }
             catch (Exception ex)

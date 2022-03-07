@@ -15,8 +15,8 @@
   <mp:PhoneIdentity PhoneProductId="f292b6b3-97c6-4a8c-8ba9-4d86f5c71a5b" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>StereoKit.Samples.AzureSpatialAnchors</DisplayName>
-    <PublisherDisplayName>StereoKit</PublisherDisplayName>
+    <DisplayName>StereoKit Azure Spatial Anchors Demo</DisplayName>
+    <PublisherDisplayName>BrunoFigueiredo.com</PublisherDisplayName>
     <Logo>Assets\Logo\Logo-50.png</Logo>
   </Properties>
 
@@ -33,7 +33,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="StereoKit.Samples.AzureSpatialAnchors.App">
       <uap:VisualElements
-        DisplayName="StereoKit.Samples.AzureSpatialAnchors"
+        DisplayName="StereoKit Azure Spatial Anchors Demo"
         Square150x150Logo="Assets\Logo\Logo-150.png"
         Square44x44Logo="Assets\Logo\Logo-44.png"
         Description="StereoKit.Samples.AzureSpatialAnchors"
@@ -69,5 +69,7 @@
   <Capabilities>
     <uap2:Capability Name="spatialPerception"/>
     <Capability Name="internetClient"/>
-    <DeviceCapability Name="gazeInput"/></Capabilities>
+    <DeviceCapability Name="gazeInput"/>
+	<DeviceCapability Name="wiFiControl"/>
+    <DeviceCapability Name="location"/></Capabilities>
 </Package>

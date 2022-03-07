@@ -34,8 +34,11 @@ This demo was tested on a Hololens 2. Azure Spatial Anchors to discover anchors 
 - looking for anchors near the device using device sensors
 - looking for anchors near other anchors
 
-The challenge with Hololens is that if we try to use the device sensors to detect near anchors, well, it (usually) never works.
+This sample will try to locate anchors near the device. It also includes a (commented) example on how to load specific anchors from a storage, in this case a local file.
 
-So what one can do is persist the ASA unique identifiers to a database and, for instance, use a QR Code for each space/room and correlate the QR Code with the ASA Ids.
+Please also notice the changes made to the Package.appxmanifest Capabilities section for the correct dependencies.
 
-For this sample what I did was simple ask for a local file to store the generated ASA ID. When the session is started the app asks for a file. If none is provided that it assumes no anchors exist. 
+## NOTES:
+
+To use the ```PlatformLocationProvider``` with WiFi we need to make a change to the Package.appxmanifest capabilities, but the current editor does not suppor this. 
+So right-click on the file and choose "View Code" and then change the ```<Capabilities>``` to have ```<DeviceCapability Name="wiFiControl"/>```.

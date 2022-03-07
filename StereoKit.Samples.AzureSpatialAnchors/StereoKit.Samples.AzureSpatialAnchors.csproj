@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="ASADemoScene.cs" />
     <Compile Include="IntroStepper.cs" />
+    <Compile Include="private_keys.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -108,7 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\DamagedHelmet.gltf" />
-    <None Include="README.md" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '16.0' ">
     <VisualStudioVersion>16.0</VisualStudioVersion>
