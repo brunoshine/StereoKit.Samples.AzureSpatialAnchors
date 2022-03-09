@@ -18,7 +18,7 @@ It provides a template to Visual Studio so that you have the initial boilerplate
 
 Azure Spatial Anchors (ASA) allow apps to map, persist, and restore 3D content or points of interest at real-world scale (aka spatial anchors).
 
-The interesting part of using ASA is that it works on multiple devices and allows an easy way to share the anchors accross them. So one user with, for instance, and Hololens can place an anchors on the real world, and another user with an Android phone can see also see the anchor, this of course as long as both users are on the same physical space.
+The interesting part of using ASA is that it works on multiple devices and allows an easy way to share the anchors accross them. So one user with, for instance an Hololens, can place an anchors on the real world, and another user with an Android phone can see also see the anchor, this of course as long as both users are on the same physical space.
 
 To run this sample it's required to have an Azure account and create Spatial Anchor resouce. For more on this you can follow [this tutorial](https://docs.microsoft.com/en-us/azure/spatial-anchors/how-tos/create-asa-account).
 
